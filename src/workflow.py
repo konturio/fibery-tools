@@ -7,249 +7,27 @@ import datetime
 import math
 import sys
 
+from queries import GET_TASKS_QUERY, GET_STORIES_QUERY
+
+try:
+    from config import TOKEN, FIBERY_BASE_URL
+except ImportError:  # pragma: no cover - config is provided by user
+    TOKEN = "--missing--"
+    FIBERY_BASE_URL = "https://kontur.fibery.io"
+
 now = datetime.datetime.now()
 
-headers = {'Authorization': 'Token ---getyourown-------------', 'Content-Type': 'application/json'}
+headers = {
+    "Authorization": f"Token {TOKEN}",
+    "Content-Type": "application/json",
+}
 
-get_tasks_command = """[
-  {
-    "command": "fibery.entity/query",
-    "args": {
-      "query": {
-        "q/from": "Tasks/Task",
-        "q/select": {
-          "Tasks/Actual~Finish": [
-            "Tasks/Actual~Finish"
-          ],
-          "Tasks/Actual~start": [
-            "Tasks/Actual~start"
-          ],
-          "ICE": [
-            "Tasks/ICE Score"
-          ],
-          "Priority": [
-            "Tasks/Priority Int"
-          ],
-          "Tasks/Deadline": [
-            "Tasks/Deadline"
-          ],
-          "Tasks/Verified by QA": [
-            "Tasks/Verified by QA"
-          ],
-          "Tasks/Story Point float": [
-            "Tasks/Story Point float"
-          ],
-          "Tasks/Skip QA": [
-            "Tasks/Skip QA"
-          ],
-          "Tasks/name": [
-            "Tasks/name"
-          ],
-          "__status": [
-            "workflow/state",
-            "enum/name"
-          ],
-          "assignments/assignees": {
-            "q/from": [
-              "assignments/assignees"
-            ],
-            "q/select": {
-              "fibery/id": [
-                "fibery/id"
-              ],
-              "fibery/public-id": [
-                "fibery/public-id"
-              ],
-              "user/name": [
-                "user/name"
-              ],
-              "fibery/rank": [
-                "fibery/rank"
-              ],
-              "user/email": [
-                "user/email"
-              ],
-              "avatar/avatars": {
-                "q/from": [
-                  "avatar/avatars"
-                ],
-                "q/limit": "q/no-limit",
-                "q/select": {
-                  "fibery/id": [
-                    "fibery/id"
-                  ],
-                  "fibery/name": [
-                    "fibery/name"
-                  ],
-                  "fibery/content-type": [
-                    "fibery/content-type"
-                  ],
-                  "fibery/secret": [
-                    "fibery/secret"
-                  ]
-                }
-              }
-            },
-            "q/order-by": [
-              [
-                [
-                  "user/name"
-                ],
-                "q/asc"
-              ]
-            ],
-            "q/limit": "q/no-limit"
-          },
-          "fibery/creation-date": [
-            "fibery/creation-date"
-          ],
-          "fibery/id": [
-            "fibery/id"
-          ],
-          "fibery/modification-date": [
-            "fibery/modification-date"
-          ],
-          "fibery/public-id": [
-            "fibery/public-id"
-          ],
-          "user/Contract": {
-            "fibery/id": [
-              "user/Contract",
-              "fibery/id"
-            ],
-            "fibery/public-id": [
-              "user/Contract",
-              "fibery/public-id"
-            ],
-            "Tasks/name": [
-              "user/Contract",
-              "Tasks/name"
-            ],
-            "Tasks/Deadline": [
-              "user/Contract",
-              "Tasks/Deadline"
-            ],
-            "workflow/state": {
-              "enum/name": [
-                "user/Contract",
-                "workflow/state",
-                "enum/name"
-              ]
-            }
-          },
-          "user/Tasks": {
-            "q/from": [
-              "user/Tasks"
-            ],
-            "q/select": {
-              "fibery/id": [
-                "fibery/id"
-              ],
-              "fibery/public-id": [
-                "fibery/public-id"
-              ],
-              "Tasks/name": [
-                "Tasks/name"
-              ],
-              "user/project": {
-                "fibery/id": [
-                  "user/project",
-                  "fibery/id"
-                ],
-                "fibery/rank": [
-                  "user/project",
-                  "fibery/rank"
-                ],
-                "fibery/public-id": [
-                  "user/project",
-                  "fibery/public-id"
-                ],
-                "Tasks/name": [
-                  "user/project",
-                  "Tasks/name"
-                ],
-                "workflow/state": {
-                  "enum/name": [
-                    "user/project",
-                    "workflow/state",
-                    "enum/name"
-                  ]
-                }
-              },
-              "workflow/state": {
-                "fibery/id": [
-                  "workflow/state",
-                  "fibery/id"
-                ],
-                "fibery/public-id": [
-                  "workflow/state",
-                  "fibery/public-id"
-                ],
-                "enum/name": [
-                  "workflow/state",
-                  "enum/name"
-                ]
-              },
-              "fibery/rank": [
-                "fibery/rank"
-              ]
-            },
-            "q/order-by": [
-              [
-                [
-                  "fibery/rank"
-                ],
-                "q/asc"
-              ]
-            ],
-            "q/limit": "q/no-limit"
-          },
-          "user/project": {
-            "fibery/id": [
-              "user/project",
-              "fibery/id"
-            ],
-            "fibery/rank": [
-              "user/project",
-              "fibery/rank"
-            ],
-            "fibery/public-id": [
-              "user/project",
-              "fibery/public-id"
-            ],
-            "Tasks/name": [
-              "user/project",
-              "Tasks/name"
-            ],
-            "workflow/state": {
-              "enum/name": [
-                "user/project",
-                "workflow/state",
-                "enum/name"
-              ]
-            }
-          },
-          "user/Sprint": {            
-            "Tasks/When": [
-              "user/Sprint",
-              "Tasks/When"
-            ],
-            "Tasks/name": [
-              "user/Sprint",
-              "Tasks/name"
-            ]
-          }          
-        },
-        "q/offset": 0,
-        "q/limit": "q/no-limit"
-      },
-      "params": {}
-    }
-  }
-]"""
+get_tasks_command = GET_TASKS_QUERY
+get_stories_command = GET_STORIES_QUERY
+
 
 json.loads(get_tasks_command)
-r = requests.post("https://kontur.fibery.io/api/commands", data=get_tasks_command, headers=headers)
+r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_tasks_command, headers=headers)
 try:
     tasks = r.json()[0]['result']
 except:
@@ -257,157 +35,9 @@ except:
 sys.stderr.write("Got tasks\n")
 sys.stderr.flush()
 
-get_stories_command = """[
-  {
-    "command": "fibery.entity/query",
-    "args": {
-      "query": {
-        "q/from": "Tasks/User Story",
-        "q/select": {
-          "Tasks/name": [
-            "Tasks/name"
-          ],
-          "__status": [
-            "workflow/state",
-            "enum/name"
-          ],
-          "ICE": [
-            "Tasks/ICE Score"
-          ], 
-          "Priority": [
-            "Tasks/Priority Int"
-          ],
-          "assignments/assignees": {
-            "q/from": [
-              "assignments/assignees"
-            ],
-            "q/select": {
-              "fibery/id": [
-                "fibery/id"
-              ],
-              "fibery/public-id": [
-                "fibery/public-id"
-              ],
-              "user/name": [
-                "user/name"
-              ],
-              "fibery/rank": [
-                "fibery/rank"
-              ],
-              "user/email": [
-                "user/email"
-              ]
-            },
-            "q/order-by": [
-              [
-                [
-                  "user/name"
-                ],
-                "q/asc"
-              ]
-            ],
-            "q/limit": "q/no-limit"
-          },
-          "fibery/creation-date": [
-            "fibery/creation-date"
-          ],
-          "fibery/id": [
-            "fibery/id"
-          ],
-          "fibery/modification-date": [
-            "fibery/modification-date"
-          ],
-          "fibery/public-id": [
-            "fibery/public-id"
-          ],
-          "user/Tasks": {
-            "q/from": [
-              "user/Tasks"
-            ],
-            "q/select": {
-              "fibery/id": [
-                "fibery/id"
-              ],
-              "fibery/public-id": [
-                "fibery/public-id"
-              ],
-              "Tasks/name": [
-                "Tasks/name"
-              ],
-              "user/project": {
-                "fibery/id": [
-                  "user/project",
-                  "fibery/id"
-                ],
-                "fibery/rank": [
-                  "user/project",
-                  "fibery/rank"
-                ],
-                "fibery/public-id": [
-                  "user/project",
-                  "fibery/public-id"
-                ],
-                "Tasks/name": [
-                  "user/project",
-                  "Tasks/name"
-                ],
-                "workflow/state": {
-                  "enum/name": [
-                    "user/project",
-                    "workflow/state",
-                    "enum/name"
-                  ]
-                }
-              },
-              "workflow/state": {
-                "fibery/id": [
-                  "workflow/state",
-                  "fibery/id"
-                ],
-                "fibery/public-id": [
-                  "workflow/state",
-                  "fibery/public-id"
-                ],
-                "enum/name": [
-                  "workflow/state",
-                  "enum/name"
-                ]
-              },
-              "fibery/rank": [
-                "fibery/rank"
-              ]
-            },
-            "q/order-by": [
-              [
-                [
-                  "fibery/rank"
-                ],
-                "q/asc"
-              ]
-            ],
-            "q/limit": "q/no-limit"
-          },
-          "user/Sprint": {            
-            "Tasks/When": [
-              "user/Sprint",
-              "Tasks/When"
-            ],
-            "Tasks/name": [
-              "user/Sprint",
-              "Tasks/name"
-            ]
-          }          
-        },
-        "q/offset": 0,
-        "q/limit": "q/no-limit"
-      },
-      "params": {}
-    }
-  }
-]"""
 
 json.loads(get_stories_command)
-r = requests.post("https://kontur.fibery.io/api/commands", data=get_stories_command, headers=headers)
+r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_stories_command, headers=headers)
 try:
     stories = r.json()[0]['result']
 except:
@@ -761,7 +391,7 @@ for task in tasks:
                     "Tasks/name"] + "\\n" + "".join(
                     [assignee["user/name"] + '\\r' for assignee in task["assignments/assignees"]]), color=color,
                 fillcolor=fillcolor, style='filled',
-                URL='https://kontur.fibery.io/Tasks/%s/%s/edit' % (task["__type"], task['fibery/public-id']))
+                URL=f"{FIBERY_BASE_URL}/Tasks/%s/%s/edit" % (task["__type"], task['fibery/public-id']))
 
         for blocker in task["user/Tasks"]:
             if blocker["fibery/id"] not in hidden_tasks:
