@@ -7,7 +7,7 @@ import datetime
 import math
 import sys
 
-from queries import GET_TASKS_QUERY, GET_STORIES_QUERY
+from queries import build_tasks_query, build_stories_query
 
 try:
     from config import TOKEN, FIBERY_BASE_URL
@@ -22,8 +22,8 @@ headers = {
     "Content-Type": "application/json",
 }
 
-get_tasks_command = GET_TASKS_QUERY
-get_stories_command = GET_STORIES_QUERY
+get_tasks_command = build_tasks_query()
+get_stories_command = build_stories_query()
 
 
 json.loads(get_tasks_command)

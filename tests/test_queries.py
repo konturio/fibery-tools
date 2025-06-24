@@ -1,9 +1,19 @@
 import json
 from pathlib import Path
 
-# Ensure query JSON templates parse correctly
-from queries import GET_TASKS_QUERY, GET_STORIES_QUERY
+# Ensure query JSON builders return valid JSON
+import sys
+
+SRC_DIR = Path(__file__).resolve().parents[1] / "src"
+sys.path.insert(0, str(SRC_DIR))
+
+from queries import (
+    build_tasks_query,
+    build_stories_query,
+    build_align_tasks_query,
+)
 
 def test_queries_are_valid_json():
-    json.loads(GET_TASKS_QUERY)
-    json.loads(GET_STORIES_QUERY)
+    json.loads(build_tasks_query())
+    json.loads(build_stories_query())
+    json.loads(build_align_tasks_query())

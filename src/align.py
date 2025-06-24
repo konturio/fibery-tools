@@ -8,39 +8,15 @@ except ImportError:  # pragma: no cover - config is provided by user
     FIBERY_BASE_URL = "https://kontur.fibery.io"
     TOKEN = "--missing--"
 
+from queries import build_align_tasks_query
+
 headers = {
     "Authorization": f"Token {TOKEN}",
     "Content-Type": "application/json",
     "User-Agent": "task branch name and actual start time fixer script",
 }
 
-get_tasks_command = """[
- {
- "command": "fibery.entity/query",
- "args": {
- "query": {
- "q/from": "Tasks/Task",
- "q/select": {
- "fibery/id": ["fibery/id"],
- "fibery/public-id": ["fibery/public-id"],
- "Tasks/name": ["Tasks/name"],
- "Tasks/Branch Name": ["Tasks/Branch Name"],
- "fibery/creation-date": ["fibery/creation-date"],
- "fibery/modification-date": ["fibery/modification-date"],
- "Tasks/Actual~Finish": ["Tasks/Actual~Finish"],
- "Tasks/Actual~start": ["Tasks/Actual~start"],
- "Tasks/Actual Test Start": ["Tasks/Actual Test Start"],
- "Tasks/Verified by QA": ["Tasks/Verified by QA"],
- "Tasks/Skip QA": ["Tasks/Skip QA"],
- "__status":["workflow/state","enum/name"] 
- },
- "q/offset": 0,
- "q/limit": "q/no-limit"
- },
- "params": {}
- }
- }
- ]"""
+get_tasks_command = build_align_tasks_query()
 
 def update_task(task):
     if "__status" in task:

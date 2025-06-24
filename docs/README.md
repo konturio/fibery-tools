@@ -6,6 +6,7 @@ This project contains small utilities for interacting with Fibery and Slack. The
 - `align` – fixes missing task start times and branch names.
 - `workflow` – generates Graphviz diagrams for active tasks.
 - `slack_standup` – posts current task status to Slack.
+- `queries` – constructs JSON requests for the Fibery API.
 
 See `config.py.example` for required configuration values.
 
