@@ -1,0 +1,6 @@
+# Example configuration for Fibery tools
+
+TOKEN = '---getyourown-------------'
+SLACK_TOKEN = '---getyourown-------------'
+SLACK_CHANNEL = 'geocint'
+FIBERY_BASE_URL = 'https://kontur.fibery.io'

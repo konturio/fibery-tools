@@ -1,13 +1,17 @@
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-import os
 from slack import WebClient
 from slack.errors import SlackApiError
 
-slack_token = "---getyourown-------------"
-#slack_token = os.environ["SLACK_API_TOKEN"]
-client = WebClient(token=slack_token)
+try:
+    from config import SLACK_TOKEN, SLACK_CHANNEL, FIBERY_BASE_URL
+except ImportError:  # pragma: no cover - config is provided by user
+    SLACK_TOKEN = "--missing--"
+    SLACK_CHANNEL = "general"
+    FIBERY_BASE_URL = "https://kontur.fibery.io"
+
+client = WebClient(token=SLACK_TOKEN)
 
 import json
 
@@ -17,7 +21,14 @@ text = ""
 for user in sorted(status.keys()):
     text += "\n*%s*\n"%user
     for task in status[user]:
-        text += " *[%s]* %s <https://kontur.fibery.io/Tasks/%s/%s|%s> \n" % (task["id"], task["status"], task["type"], task["id"], task["name"])
+        text += " *[%s]* %s <%s/Tasks/%s/%s|%s> \n" % (
+            task["id"],
+            task["status"],
+            FIBERY_BASE_URL,
+            task["type"],
+            task["id"],
+            task["name"],
+        )
     
 
 print(text)
@@ -27,9 +38,9 @@ try:
   response = client.chat_postMessage(
     icon_emoji=":cat:",
     username="What's going on?",
-    channel="geocint",
+    channel=SLACK_CHANNEL,
     text=text,
-    type="mrkdwn"
+    type="mrkdwn",
   )
 except SlackApiError as e:
   # You will get a SlackApiError if "ok" is False

@@ -2,7 +2,17 @@ import requests
 import json
 import re
 
-headers = {'Authorization':'Token ---getyourown-------------','Content-Type': 'application/json', 'User-Agent': 'task branch name and actual start time fixer script'}
+try:
+    from config import FIBERY_BASE_URL, TOKEN
+except ImportError:  # pragma: no cover - config is provided by user
+    FIBERY_BASE_URL = "https://kontur.fibery.io"
+    TOKEN = "--missing--"
+
+headers = {
+    "Authorization": f"Token {TOKEN}",
+    "Content-Type": "application/json",
+    "User-Agent": "task branch name and actual start time fixer script",
+}
 
 get_tasks_command = """[
  {
@@ -51,11 +61,11 @@ def update_task(task):
         }
     ]
 #    print(update_tasks_command)
-    r = requests.post("https://kontur.fibery.io/api/commands", data=json.dumps(update_tasks_command), headers=headers)
+    r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=json.dumps(update_tasks_command), headers=headers)
     print(r.text)
 
 json.loads(get_tasks_command)
-r = requests.post("https://kontur.fibery.io/api/commands", data=get_tasks_command, headers=headers)
+r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_tasks_command, headers=headers)
 tasks = r.json()[0]['result']
 
 def removeSequenceOf(symbol, string):

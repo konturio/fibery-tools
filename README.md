@@ -1,13 +1,14 @@
 # Fibery tools
 
-Each file has a key in start, fill it in to use.
+Small utilities to work with Fibery tasks and Slack standups.
 
-fibery_align.py - runs in endless loop and updates fields that don't make sense
+## Usage
 
-fibery_workflow.py - generates graphviz dependencies for all the tasks, 
-and a people_working_on.json with current tasks of everyone
+1. Copy `config.py.example` to `config.py` and fill in your tokens.
+2. Install dependencies from `requirements.txt`.
+3. Run any script from the `src/` directory, e.g.
+
+```bash
+python src/workflow.py | dot -v -Tsvg > tasks.svg
 ```
-python3 fibery_workflow.py | dot -v -Tsvg > tasks.svg
-```
-
-slack_standup.py - sends slack notification based on people_working_on.json
+See `docs/README.md` for more details and `docs/config.md` for configuration options.
