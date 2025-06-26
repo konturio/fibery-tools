@@ -3,7 +3,7 @@
 This project contains small utilities for interacting with Fibery and Slack. The scripts live under `src/`.
 
 ## Modules
-- `align` – fixes missing task start times and branch names.
+- `align` – fixes missing task start times, branch names and resets disabled formula fields.
 - `workflow` – generates Graphviz diagrams for active tasks.
 - `slack_standup` – posts current task status to Slack.
 
