@@ -2,7 +2,17 @@ import requests
 import json
 import csv
 
-headers = {'Authorization':'Token --------','Content-Type': 'application/json', 'User-Agent': 'darafei@kontur.io rank patcher script'}
+try:
+    from config import TOKEN, FIBERY_BASE_URL
+except ImportError:  # pragma: no cover - config provided by user
+    TOKEN = "--missing--"
+    FIBERY_BASE_URL = "https://kontur.fibery.io"
+
+headers = {
+    "Authorization": f"Token {TOKEN}",
+    "Content-Type": "application/json",
+    "User-Agent": "rank patcher script",
+}
 def update_task(tasks):
     update_tasks_command = []
     for task in tasks:
@@ -29,7 +39,7 @@ def update_task(tasks):
     while update_tasks_command:
         chunk = update_tasks_command[:300]
         update_tasks_command = update_tasks_command[300:]
-        r = requests.post("https://kontur.fibery.io/api/commands", data=json.dumps(chunk), headers=headers)
+        r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=json.dumps(chunk), headers=headers)
         print(r.text)
     
 

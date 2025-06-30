@@ -3,13 +3,17 @@ logging.basicConfig(level=logging.DEBUG)
 import dateutil.parser as dp
 from datetime import date
 import datetime
-import os
 from slack import WebClient
 from slack.errors import SlackApiError
 
-slack_token = "xoxb-2--------------IG"
-#slack_token = os.environ["SLACK_API_TOKEN"]
-client = WebClient(token=slack_token)
+try:
+    from config import SLACK_TOKEN, SLACK_CHANNEL, FIBERY_BASE_URL
+except ImportError:  # pragma: no cover - config provided by user
+    SLACK_TOKEN = "--missing--"
+    SLACK_CHANNEL = "project-management"
+    FIBERY_BASE_URL = "https://kontur.fibery.io"
+
+client = WebClient(token=SLACK_TOKEN)
 import json
 
 status = json.loads(open("people_working_on.json").read())
@@ -24,14 +28,23 @@ for user in sorted(status.keys()):
         will_fail = ""
         if task["will_fail"]:
             will_fail = "*scheduled to fail*"
-        text += " *[%s]* %s <https://kontur.fibery.io/Tasks/%s/%s|%s> %s %s \n" % (task["id"], task["status"], task["type"], task["id"], task["name"].replace('>','-'), will_fail, ago)
+        text += " *[%s]* %s <%s/Tasks/%s/%s|%s> %s %s \n" % (
+            task["id"],
+            task["status"],
+            FIBERY_BASE_URL,
+            task["type"],
+            task["id"],
+            task["name"].replace('>', '-'),
+            will_fail,
+            ago,
+        )
         
     try:
         print(text)
         response = client.chat_postMessage(
             icon_emoji=":cat:",
             username="What's going on?",
-            channel="project-management",
+            channel=SLACK_CHANNEL,
             text=text,
             type="mrkdwn"
         )
