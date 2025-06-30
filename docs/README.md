@@ -27,4 +27,8 @@ make ranks
 make svg
 ```
 The `diagram` target combines ranks update with rendering in one step.
-You can also run `scripts/render_tasks.sh` directly.
+Run it directly when you need both actions in one command:
+
+```bash
+make diagram
+```
