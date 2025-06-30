@@ -1,13 +1,22 @@
 import requests
 import json
-import csv
 
-headers = {'Authorization':'Token -------','Content-Type': 'application/json', 'User-Agent': 'darafei@kontur.io search disabler script'}
+try:
+    from config import TOKEN, FIBERY_BASE_URL
+except ImportError:  # pragma: no cover - config provided by user
+    TOKEN = "--missing--"
+    FIBERY_BASE_URL = "https://kontur.fibery.io"
+
+headers = {
+    "Authorization": f"Token {TOKEN}",
+    "Content-Type": "application/json",
+    "User-Agent": "search disabler script",
+}
 
 def disable_search_in(schema):
     chunk = [{"command":"fibery.schema/batch", "args":{"commands":[{"command":"schema.type/set-meta", "args":{"name":schema, "key":"search/disabled", "value":True}}]}}]
     print(chunk)
-    r = requests.post("https://kontur.fibery.io/api/commands", data=json.dumps(chunk), headers=headers)
+    r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=json.dumps(chunk), headers=headers)
     print(r.text)
     
 disable_search_in("KPI/Personal KPI")
@@ -27,4 +36,4 @@ disable_search_in("KPI/Time Utilization")
 
 
 
-print(requests.get("https://kontur.fibery.io/api/search/reindex", headers=headers))
+print(requests.get(f"{FIBERY_BASE_URL}/api/search/reindex", headers=headers))

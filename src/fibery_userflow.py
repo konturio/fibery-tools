@@ -8,9 +8,19 @@ import math
 import sys
 import csv
 
+try:
+    from config import TOKEN, FIBERY_BASE_URL
+except ImportError:  # pragma: no cover - config provided by user
+    TOKEN = "--missing--"
+    FIBERY_BASE_URL = "https://kontur.fibery.io"
+
 def aaa():
 
-    headers = {'Authorization': 'Token ----------', 'Content-Type': 'application/json', 'User-Agent': 'darafei@kontur.io user flow charting reader'}
+    headers = {
+        "Authorization": f"Token {TOKEN}",
+        "Content-Type": "application/json",
+        "User-Agent": "user flow charting reader",
+    }
 
     get_steps_command = """
 [
@@ -68,7 +78,7 @@ def aaa():
 
 
     json.loads(get_steps_command)
-    r = requests.post("https://kontur.fibery.io/api/commands", data=get_steps_command, headers=headers)
+    r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_steps_command, headers=headers)
     try:
         steps = r.json()[0]['result']
     except:
@@ -138,7 +148,7 @@ def aaa():
 
 
     json.loads(get_cases_command)
-    r = requests.post("https://kontur.fibery.io/api/commands", data=get_cases_command, headers=headers)
+    r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_cases_command, headers=headers)
     try:
         cases = r.json()[0]['result']
     except:
@@ -206,7 +216,7 @@ def aaa():
                     'Step #' + step['fibery/public-id'] + "\\l" + break_task_name(step[
                         "Name"]), color=color,
                     fillcolor=fillcolor, style='filled',
-                    URL='https://kontur.fibery.io/Product_management/Scenario_Step/%s/edit' % (step['fibery/public-id']))
+                    URL=f"{FIBERY_BASE_URL}/Product_management/Scenario_Step/%s/edit" % (step['fibery/public-id']))
         for next_step in step["Product management/Scenario Steps After"]:
             # need to decide on color. 
             # orange - if we replaced the direct edge from use case to this orange
@@ -229,7 +239,7 @@ def aaa():
                     'Case #' + case['fibery/public-id'] + "\\l" + break_task_name(case[
                         "Name"]), color=color,
                     fillcolor=fillcolor, style='filled',
-                    URL='https://kontur.fibery.io/Product_management/Use_case/%s/edit' % (case['fibery/public-id']))
+                    URL=f"{FIBERY_BASE_URL}/Product_management/Use_case/%s/edit" % (case['fibery/public-id']))
     dot.subgraph(gr)
     for case_edge in (case_edges-hidden_case_edges):
         dot.edge(case_edge[0], case_edge[1], color="orange", weight="1000")        
