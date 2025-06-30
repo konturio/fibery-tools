@@ -116,6 +116,7 @@ def main():
     # Reset formulas that may be disabled due to endless loop errors.
     reset_formula_fields([
         ("Tasks/User Story", "Tasks/ICE Score"),
+        ("fibery/user", "user/Estimate scaling intercept"),
     ])
 
 def removeSequenceOf(symbol, string):
