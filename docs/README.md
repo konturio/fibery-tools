@@ -16,3 +16,15 @@ See `config.py.example` for required configuration values.
 
 Continuous integration runs on GitHub Actions and checks code style,
 executes unit tests and reports coverage to Codecov.
+
+## Generating task diagram
+
+Update ranks and render a diagram using Makefile targets:
+
+```bash
+make align
+make ranks
+make svg
+```
+The `diagram` target combines ranks update with rendering in one step.
+You can also run `scripts/render_tasks.sh` directly.
