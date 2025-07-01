@@ -15,6 +15,8 @@ This project contains small utilities for interacting with Fibery and Slack. The
 See `config.py.example` for required configuration values.
 All scripts load configuration from `config.py` in the repository root and exit if this file is missing.
 
+Logs are emitted using structlog at info level by default.
+
 Continuous integration runs on GitHub Actions and checks code style,
 executes unit tests and reports coverage to Codecov.
 

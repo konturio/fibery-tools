@@ -7,9 +7,11 @@ import datetime
 import csv
 import math
 from config_loader import import_config
+from log import get_logger
 from queries import GET_TASKS_QUERY, GET_STORIES_QUERY
 
 TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
+log = get_logger(__name__)
 
 now = datetime.datetime.now()
 
@@ -457,4 +459,4 @@ for task in tasks:
 for sprint in sprints.values():
     dot.subgraph(sprint)
 
-print(dot.source)
+log.info(dot.source)

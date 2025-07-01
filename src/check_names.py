@@ -1,3 +1,6 @@
+from log import get_logger
+log = get_logger(__name__)
+
 import csv
 
 with open('tasknames.csv', newline='') as csvfile:
@@ -88,8 +91,8 @@ with open('tasknames.csv', newline='') as csvfile:
 
                 
             if issues:# and 'User_Story' in url:
-                print(task['url'], name)
+                log.info(f"{task['url']} {name}")
                 for issue in issues:
-                    print(' - %s.' % issue.strip("."))
-                print()
+                    log.info(' - %s.' % issue.strip('.'))
+                log.info("")
                 #print(len(issues), name, task['url'], issues)

@@ -2,8 +2,10 @@ import requests
 import json
 import csv
 from config_loader import import_config
+from log import get_logger
 
 TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
+log = get_logger(__name__)
 
 headers = {
     "Authorization": f"Token {TOKEN}",
@@ -32,12 +34,12 @@ def update_task(tasks):
                 }
             })
         
-    print(update_tasks_command)
+    log.info(update_tasks_command)
     while update_tasks_command:
         chunk = update_tasks_command[:300]
         update_tasks_command = update_tasks_command[300:]
         r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=json.dumps(chunk), headers=headers)
-        print(r.text)
+        log.info(r.text)
     
 
 min_rank  = -9000000000000000
@@ -141,13 +143,13 @@ while runs:
 
 
 
-print(sorted_result)
+log.info(sorted_result)
 # flip it so top entries get changed first
 sorted_result = sorted(sorted_result, key=lambda task: task["orig_rank"])
 t = []
 for i in sorted_result:
     if i["orig_rank"] != i["fibery/rank"]:        
-        print(i)
+        log.info(i)
         del i["orig_rank"]
         del i["new_rank"]
         t.append(i)

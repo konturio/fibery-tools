@@ -1,5 +1,5 @@
-import logging
-logging.basicConfig(level=logging.DEBUG)
+from log import get_logger
+log = get_logger(__name__)
 import dateutil.parser as dp
 from datetime import date
 import datetime
@@ -38,7 +38,7 @@ for user in sorted(status.keys()):
         )
         
     try:
-        print(text)
+        log.info(text)
         response = client.chat_postMessage(
             icon_emoji=":cat:",
             username="What's going on?",
