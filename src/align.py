@@ -5,14 +5,10 @@ except ImportError:  # pragma: no cover - requests may be absent during tests
         pass
 import json
 import re
-import sys
+from config_loader import import_config
 
-try:
-    from config import FIBERY_BASE_URL, TOKEN
-except ImportError as exc:  # pragma: no cover - configuration must be supplied
-    raise SystemExit(
-        "Missing config.py. Copy config.py.example and provide real values."
-    ) from exc
+FIBERY_BASE_URL, TOKEN = import_config("FIBERY_BASE_URL", "TOKEN")
+
 
 headers = {
     "Authorization": f"Token {TOKEN}",
