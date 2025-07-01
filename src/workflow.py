@@ -1,5 +1,6 @@
 import requests
 import json
+import sys
 import dateutil.parser as dp
 from graphviz import Digraph
 from datetime import date
@@ -9,6 +10,7 @@ import math
 from config_loader import import_config
 from log import get_logger
 from queries import GET_TASKS_QUERY, GET_STORIES_QUERY
+from fibery_api import command_result
 
 TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
 log = get_logger(__name__)
@@ -26,9 +28,8 @@ get_stories_command = GET_STORIES_QUERY
 
 json.loads(get_tasks_command)
 r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_tasks_command, headers=headers)
-try:
-    tasks = r.json()[0]['result']
-except:
+tasks = command_result(r)
+if tasks is None:
     sys.stderr.write(r.text)
 sys.stderr.write("Got tasks\n")
 sys.stderr.flush()
@@ -36,9 +37,8 @@ sys.stderr.flush()
 
 json.loads(get_stories_command)
 r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_stories_command, headers=headers)
-try:
-    stories = r.json()[0]['result']
-except:
+stories = command_result(r)
+if stories is None:
     sys.stderr.write(r.text)
 sys.stderr.write("Got user stories\n")
 sys.stderr.flush()

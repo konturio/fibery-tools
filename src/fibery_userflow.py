@@ -1,5 +1,6 @@
 import requests
 import json
+import sys
 import dateutil.parser as dp
 from graphviz import Digraph
 from datetime import date
@@ -8,6 +9,7 @@ import math
 import csv
 from config_loader import import_config
 from log import get_logger
+from fibery_api import command_result
 
 TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
 log = get_logger(__name__)
@@ -77,11 +79,10 @@ def aaa():
 
     json.loads(get_steps_command)
     r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_steps_command, headers=headers)
-    try:
-        steps = r.json()[0]['result']
-    except:
+    steps = command_result(r)
+    if steps is None:
         sys.stderr.write(r.text)
-        pass
+        steps = []
     
     
     
@@ -147,11 +148,10 @@ def aaa():
 
     json.loads(get_cases_command)
     r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_cases_command, headers=headers)
-    try:
-        cases = r.json()[0]['result']
-    except:
+    cases = command_result(r)
+    if cases is None:
         sys.stderr.write(r.text)
-        pass
+        cases = []
     
     
     

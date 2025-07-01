@@ -4,9 +4,11 @@ except ImportError:  # pragma: no cover - requests may be absent during tests
     class requests:
         pass
 import json
+import sys
 import re
 from config_loader import import_config
 from log import get_logger
+from fibery_api import command_result
 
 
 FIBERY_BASE_URL, TOKEN = import_config("FIBERY_BASE_URL", "TOKEN")
@@ -112,9 +114,8 @@ def main():
         data=get_tasks_command,
         headers=headers,
     )
-    try:
-        tasks = r.json()[0]["result"]
-    except Exception:
+    tasks = command_result(r)
+    if tasks is None:
         sys.stderr.write(r.text)
         return
 
