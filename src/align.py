@@ -5,6 +5,7 @@ except ImportError:  # pragma: no cover - requests may be absent during tests
         pass
 import json
 import re
+import sys
 
 try:
     from config import FIBERY_BASE_URL, TOKEN
@@ -111,7 +112,11 @@ def main():
         data=get_tasks_command,
         headers=headers,
     )
-    tasks = r.json()[0]["result"]
+    try:
+        tasks = r.json()[0]["result"]
+    except Exception:
+        sys.stderr.write(r.text)
+        return
 
     # Reset formulas that may be disabled due to endless loop errors.
     reset_formula_fields([
@@ -119,29 +124,7 @@ def main():
         ("fibery/user", "user/Estimate scaling intercept"),
     ])
 
-def removeSequenceOf(symbol, string):
-    filtered = filter(lambda s: s != "", string.split(symbol))
-    return symbol.join(filtered)
-
-
-def branch_name(task):
-    cleanedName = ""
-    if task.get("Tasks/name", ""):
-        cleanedName = re.sub(
-            r"[^(\w|\d|\-)]|[()\[\]\{\}]",
-            "-",
-            task.get("Tasks/name", "").strip().lower(),
-        )
-    withoutRepeated = removeSequenceOf("-", cleanedName)
-    return task["fibery/public-id"] + "-" + withoutRepeated
-
-#   return task["fibery/public-id"]+'_'+ task["Tasks/name"].lower().replace('"',"").replace("'","").replace("#","").replace(' ','_').replace('[','').replace(']','').replace('(','').replace(')','').replace(':',"").replace('@','_at_').replace('__',"_")
-#    cleanedName = re.sub(r'[^(\w|\d|\s)]', '', task["Tasks/name"].strip().lower());
-#    result = filter(lambda s: s != '', cleanedName.split(' '));
-#    return task["fibery/public-id"] + '_' + '_'.join(result);
-
     for task in tasks:
-        # print(task)
         changed = False
         if (
             task["__status"] in ["In Progress", "Review", "In Testing", "To Test"]
@@ -183,6 +166,22 @@ def branch_name(task):
         if changed:
             print(task)
             update_task(task)
+
+def removeSequenceOf(symbol, string):
+    filtered = filter(lambda s: s != "", string.split(symbol))
+    return symbol.join(filtered)
+
+
+def branch_name(task):
+    cleanedName = ""
+    if task.get("Tasks/name", ""):
+        cleanedName = re.sub(
+            r"[^(\w|\d|\-)]|[()\[\]\{\}]",
+            "-",
+            task.get("Tasks/name", "").strip().lower(),
+        )
+    withoutRepeated = removeSequenceOf("-", cleanedName)
+    return task["fibery/public-id"] + "-" + withoutRepeated
 
     # update_task({"fibery/id": "b37845c0-4c96-11e9-8199-61f8d753595e", "Tasks/name": "Super name_updated"})
 
