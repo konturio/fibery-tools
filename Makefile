@@ -1,13 +1,17 @@
-.PHONY: precommit align ranks svg diagram
+.PHONY: precommit align dot ranks svg diagram
 
 precommit: ## Run basic checks
 	@scripts/verify_makefile_tabs.sh
 	@scripts/check_python.sh
 
-align: tasks.dot ## Export tasks as Graphviz dot file
+
+align: ## Fix task metadata in Fibery
+	@python3 src/align.py
+
+dot: tasks.dot ## Export tasks as Graphviz dot file
 
 tasks.dot:
-	@python3 src/align.py | unflatten -l 2 -f -c 5 > $@
+	@python3 src/workflow.py | unflatten -l 2 -f -c 5 > $@
 
 ranks: ## Patch Fibery task ranks
 	@python3 src/patch_ranks.py
