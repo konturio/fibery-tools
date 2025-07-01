@@ -4,6 +4,7 @@ import dateutil.parser as dp
 from graphviz import Digraph
 from datetime import date
 import datetime
+import csv
 import math
 import sys
 
@@ -50,7 +51,9 @@ tasks += stories
 dot = Digraph()
 dot.graph_attr["rankdir"] = "TB"
 dot.graph_attr["newrank"] = "true"
-dot.graph_attr["nslimit"] = "5.0"
+# Increase graph complexity limits a bit
+dot.graph_attr["nslimit"] = "10.0"
+dot.graph_attr["nodesep"] = "1"
 # dot.graph_attr["nslimit"] = "50.0"
 # dot.graph_attr["concentrate"]="true"
 
@@ -111,11 +114,24 @@ def qa_id(i):
 qa_tasks = []
 
 users = set()
+ephemeral_dependencies = set()
 
 for task in tasks:
     hl = "2999-12-30"
     skip_qa = task.get("Tasks/Skip QA", True)  # User stories don't have Skip QA
     task["__type"] = "Task"
+    # Substories block their parent tasks
+    if "user/Substories" in task:
+        task["user/Tasks"].extend(task["user/Substories"])
+
+    # Story subtasks block all tasks of the story
+    if "user/User Story" in task:
+        task["user/Tasks"].extend(task["user/User Story"].get("user/Substories", []))
+        for story in task["user/User Story"].get("user/Substories", []):
+            ephemeral_dependencies.add((task["fibery/id"], story["fibery/id"]))
+
+    # Avoid self-dependencies accidentally introduced
+    task["user/Tasks"] = [i for i in task["user/Tasks"] if i["fibery/id"] != task["fibery/id"]]
     if "Tasks/Deadline" not in task:  # US have no deadline
         task["Tasks/Deadline"] = None
         task["__type"] = "User_Story"
@@ -270,6 +286,39 @@ prioritized_tasks = sorted(prioritized_tasks,
                                "__status"] == "In Testing" or tasks_by_id[l]["__status"] == "To Test" or tasks_by_id[l][
                                              "__status"] == "Review", reverse=True)
 
+prioritized_tasks_copy = prioritized_tasks.copy()
+
+prioritized_tasks_set = set(prioritized_tasks)
+while prioritized_tasks:
+    for task_id in prioritized_tasks:
+        task = tasks_by_id[task_id]
+        is_blocked = any([t["fibery/id"] in prioritized_tasks_set for t in task["user/Tasks"]])
+        if is_blocked:
+            continue
+        prioritized_tasks.remove(task_id)
+        prioritized_tasks_set.remove(task_id)
+        break
+    else:
+        removed = False
+        for edge in list(ephemeral_dependencies):
+            if edge[0] in prioritized_tasks_set and edge[1] in prioritized_tasks_set:
+                tasks_by_id[edge[0]]["user/Tasks"] = [i for i in tasks_by_id[edge[0]]["user/Tasks"] if i["fibery/id"] != edge[1]]
+                ephemeral_dependencies.remove(edge)
+                sys.stderr.write(f"Removed ephemeral dependency {edge[0]} - {edge[1]}\n")
+                sys.stderr.flush()
+                removed = True
+                break
+        if not removed:
+            for dep in tasks_by_id[prioritized_tasks[0]]["user/Tasks"]:
+                fid = dep["fibery/id"]
+                if fid in prioritized_tasks_set:
+                    tasks_by_id[prioritized_tasks[0]]["user/Tasks"] = [i for i in tasks_by_id[prioritized_tasks[0]]["user/Tasks"] if i["fibery/id"] != fid]
+                    sys.stderr.write(f"Removed circular dependency {prioritized_tasks[0]} - {fid}\n")
+                    sys.stderr.flush()
+                    break
+        prioritized_tasks = prioritized_tasks_copy
+        prioritized_tasks_set = set(prioritized_tasks)
+
 sys.stderr.write("Prioritized tasks\n")
 sys.stderr.flush()
 
@@ -344,7 +393,20 @@ while prioritized_tasks and users:
             break
     else:
         blocked_users.add(min_user)
+open('unaligned_tasks.json', 'w').write(json.dumps(prioritized_tasks))
 open('people_working_on.json','w').write(json.dumps(working_on_now))
+
+with open('tasknames.csv', 'w', newline='') as csvfile:
+    namewriter = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
+    for task in tasks:
+        namewriter.writerow([
+            task["fibery/id"],
+            task["Tasks/name"],
+            f"{FIBERY_BASE_URL}/Tasks/{task['__type']}/{task['fibery/public-id']}/edit",
+            task['__status'],
+            task.get("new_rank", 0),
+            task.get('fibery/rank', 0),
+        ])
 
 people_graph.graph_attr["rank"] = "source"
 dot.subgraph(people_graph)

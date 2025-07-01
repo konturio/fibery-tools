@@ -6,7 +6,7 @@ Small utilities to work with Fibery tasks and Slack standups.
 
 1. Copy `config.py.example` to `config.py` and fill in your tokens.
 2. Install dependencies from `requirements.txt`.
-3. Run any script from the `src/` directory, e.g.
+3. Run any script from the `src/` directory. `workflow.py` also breaks loops between tasks:
 
 ```bash
 python src/workflow.py | dot -v -Tsvg > tasks.svg
