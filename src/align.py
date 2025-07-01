@@ -9,9 +9,10 @@ import sys
 
 try:
     from config import FIBERY_BASE_URL, TOKEN
-except ImportError:  # pragma: no cover - config is provided by user
-    FIBERY_BASE_URL = "https://kontur.fibery.io"
-    TOKEN = "--missing--"
+except ImportError as exc:  # pragma: no cover - configuration must be supplied
+    raise SystemExit(
+        "Missing config.py. Copy config.py.example and provide real values."
+    ) from exc
 
 headers = {
     "Authorization": f"Token {TOKEN}",

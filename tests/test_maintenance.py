@@ -6,6 +6,11 @@ import types
 sys.modules['requests'] = types.ModuleType('requests')
 sys.modules['requests'].post = lambda *args, **kwargs: None
 
+# Provide a stub config module so align imports succeed without real tokens
+sys.modules['config'] = types.ModuleType('config')
+sys.modules['config'].FIBERY_BASE_URL = 'https://example.fibery.io'
+sys.modules['config'].TOKEN = 'dummy'
+
 from align import reset_formula_fields, requests
 
 class DummyResponse:
