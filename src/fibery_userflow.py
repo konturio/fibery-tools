@@ -81,14 +81,11 @@ def aaa():
     r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_steps_command, headers=headers)
     steps = command_result(r)
     if steps is None:
+        log.warning("No steps returned")
         sys.stderr.write(r.text)
         steps = []
-    
-    
-    
-    #sys.stderr.write(r.text)
-    sys.stderr.write("Got steps\n")
-    sys.stderr.flush()
+
+    log.info("Got steps")
     
 
     get_cases_command = """
@@ -150,14 +147,12 @@ def aaa():
     r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_cases_command, headers=headers)
     cases = command_result(r)
     if cases is None:
+        log.warning("No cases returned")
         sys.stderr.write(r.text)
         cases = []
-    
-    
-    
+
     sys.stderr.write(r.text)
-    sys.stderr.write("Got cases\n")
-    sys.stderr.flush()
+    log.info("Got cases")
 
     dot = Digraph()
     #dot.graph_attr["rankdir"] = "TB"

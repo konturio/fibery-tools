@@ -28,20 +28,22 @@ get_stories_command = GET_STORIES_QUERY
 
 json.loads(get_tasks_command)
 r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_tasks_command, headers=headers)
-tasks = command_result(r)
-if tasks is None:
+tasks = command_result(r) or []
+if not tasks:
+    log.warning("No tasks returned")
+    # Log full API response when no tasks returned
     sys.stderr.write(r.text)
-sys.stderr.write("Got tasks\n")
-sys.stderr.flush()
+log.info("Got tasks")
 
 
 json.loads(get_stories_command)
 r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_stories_command, headers=headers)
-stories = command_result(r)
-if stories is None:
+stories = command_result(r) or []
+if not stories:
+    log.warning("No user stories returned")
+    # Log full API response when no user stories returned
     sys.stderr.write(r.text)
-sys.stderr.write("Got user stories\n")
-sys.stderr.flush()
+log.info("Got user stories")
 
 tasks += stories
 
@@ -238,8 +240,7 @@ for task in tasks:
 
 tasks += qa_tasks
 
-sys.stderr.write("Reformatted tasks\n")
-sys.stderr.flush()
+log.info("Reformatted tasks")
 
 for task in tasks:
     tasks_by_id[task["fibery/id"]] = task
@@ -262,8 +263,7 @@ while True:
     if not modified:
         break
 
-sys.stderr.write("Assigned deadlines\n")
-sys.stderr.flush()
+log.info("Assigned deadlines")
 
 people_graph = Digraph(name="cluster_people")
 
@@ -301,8 +301,7 @@ while prioritized_tasks:
             if edge[0] in prioritized_tasks_set and edge[1] in prioritized_tasks_set:
                 tasks_by_id[edge[0]]["user/Tasks"] = [i for i in tasks_by_id[edge[0]]["user/Tasks"] if i["fibery/id"] != edge[1]]
                 ephemeral_dependencies.remove(edge)
-                sys.stderr.write(f"Removed ephemeral dependency {edge[0]} - {edge[1]}\n")
-                sys.stderr.flush()
+                log.info("Removed ephemeral dependency", edge=edge)
                 removed = True
                 break
         if not removed:
@@ -310,14 +309,12 @@ while prioritized_tasks:
                 fid = dep["fibery/id"]
                 if fid in prioritized_tasks_set:
                     tasks_by_id[prioritized_tasks[0]]["user/Tasks"] = [i for i in tasks_by_id[prioritized_tasks[0]]["user/Tasks"] if i["fibery/id"] != fid]
-                    sys.stderr.write(f"Removed circular dependency {prioritized_tasks[0]} - {fid}\n")
-                    sys.stderr.flush()
+                    log.info("Removed circular dependency", pair=(prioritized_tasks[0], fid))
                     break
         prioritized_tasks = prioritized_tasks_copy
         prioritized_tasks_set = set(prioritized_tasks)
 
-sys.stderr.write("Prioritized tasks\n")
-sys.stderr.flush()
+log.info("Prioritized tasks")
 
 max_user_time = {}
 for user in users:
