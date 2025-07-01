@@ -5,13 +5,11 @@ from datetime import date
 import datetime
 from slack import WebClient
 from slack.errors import SlackApiError
+from config_loader import import_config
 
-try:
-    from config import SLACK_TOKEN, SLACK_CHANNEL, FIBERY_BASE_URL
-except ImportError as exc:  # pragma: no cover - configuration must be supplied
-    raise SystemExit(
-        "Missing config.py. Copy config.py.example and provide real values."
-    ) from exc
+SLACK_TOKEN, SLACK_CHANNEL, FIBERY_BASE_URL = import_config(
+    "SLACK_TOKEN", "SLACK_CHANNEL", "FIBERY_BASE_URL"
+)
 
 client = WebClient(token=SLACK_TOKEN)
 import json

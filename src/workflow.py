@@ -6,16 +6,10 @@ from datetime import date
 import datetime
 import csv
 import math
-import sys
-
+from config_loader import import_config
 from queries import GET_TASKS_QUERY, GET_STORIES_QUERY
 
-try:
-    from config import TOKEN, FIBERY_BASE_URL
-except ImportError as exc:  # pragma: no cover - configuration must be supplied
-    raise SystemExit(
-        "Missing config.py. Copy config.py.example and provide real values."
-    ) from exc
+TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
 
 now = datetime.datetime.now()
 
