@@ -1,5 +1,5 @@
-import logging
-logging.basicConfig(level=logging.DEBUG)
+from log import get_logger
+log = get_logger(__name__)
 
 from slack import WebClient
 from slack.errors import SlackApiError
@@ -29,8 +29,8 @@ for user in sorted(status.keys()):
         )
     
 
-print(text)
-print(status)
+log.info(text)
+log.info(status)
 ##exit()
 try:
   response = client.chat_postMessage(

@@ -1,8 +1,10 @@
 import requests
 import json
 from config_loader import import_config
+from log import get_logger
 
 TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
+log = get_logger(__name__)
 
 headers = {
     "Authorization": f"Token {TOKEN}",
@@ -12,9 +14,9 @@ headers = {
 
 def disable_search_in(schema):
     chunk = [{"command":"fibery.schema/batch", "args":{"commands":[{"command":"schema.type/set-meta", "args":{"name":schema, "key":"search/disabled", "value":True}}]}}]
-    print(chunk)
+    log.info(chunk)
     r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=json.dumps(chunk), headers=headers)
-    print(r.text)
+    log.info(r.text)
     
 disable_search_in("KPI/Personal KPI")
 disable_search_in("KPI/Teams KPI")
@@ -33,4 +35,4 @@ disable_search_in("KPI/Time Utilization")
 
 
 
-print(requests.get(f"{FIBERY_BASE_URL}/api/search/reindex", headers=headers))
+log.info(requests.get(f"{FIBERY_BASE_URL}/api/search/reindex", headers=headers))

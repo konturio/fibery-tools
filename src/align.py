@@ -6,8 +6,11 @@ except ImportError:  # pragma: no cover - requests may be absent during tests
 import json
 import re
 from config_loader import import_config
+from log import get_logger
+
 
 FIBERY_BASE_URL, TOKEN = import_config("FIBERY_BASE_URL", "TOKEN")
+log = get_logger(__name__)
 
 
 headers = {
@@ -99,7 +102,7 @@ def update_task(task):
     ]
 #    print(update_tasks_command)
     r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=json.dumps(update_tasks_command), headers=headers)
-    print(r.text)
+    log.info(r.text)
 
 
 def main():
@@ -161,7 +164,7 @@ def main():
             changed = True
 
         if changed:
-            print(task)
+            log.info(task)
             update_task(task)
 
 def removeSequenceOf(symbol, string):

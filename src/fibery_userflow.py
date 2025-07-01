@@ -7,8 +7,10 @@ import datetime
 import math
 import csv
 from config_loader import import_config
+from log import get_logger
 
 TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
+log = get_logger(__name__)
 
 def aaa():
 
@@ -242,6 +244,6 @@ def aaa():
 
 
 
-    print(dot.source)
+    log.info(dot.source)
 
 aaa()
