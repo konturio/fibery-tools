@@ -14,7 +14,7 @@ python src/workflow.py | dot -v -Tsvg > tasks.svg
 Generate diagrams using Makefile helpers:
 
 ```bash
-make align   # build tasks.dot
+make dot     # build tasks.dot
 make ranks   # update ranks in Fibery
 make svg     # render tasks.svg
 ```

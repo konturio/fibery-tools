@@ -23,7 +23,7 @@ executes unit tests and reports coverage to Codecov.
 Update ranks and render a diagram using Makefile targets:
 
 ```bash
-make align
+make dot
 make ranks
 make svg
 ```
