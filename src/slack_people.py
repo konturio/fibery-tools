@@ -8,10 +8,10 @@ from slack.errors import SlackApiError
 
 try:
     from config import SLACK_TOKEN, SLACK_CHANNEL, FIBERY_BASE_URL
-except ImportError:  # pragma: no cover - config provided by user
-    SLACK_TOKEN = "--missing--"
-    SLACK_CHANNEL = "project-management"
-    FIBERY_BASE_URL = "https://kontur.fibery.io"
+except ImportError as exc:  # pragma: no cover - configuration must be supplied
+    raise SystemExit(
+        "Missing config.py. Copy config.py.example and provide real values."
+    ) from exc
 
 client = WebClient(token=SLACK_TOKEN)
 import json

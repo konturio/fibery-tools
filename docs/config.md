@@ -6,3 +6,5 @@ Copy `config.py.example` to `config.py` and set values:
 - `SLACK_TOKEN` – Slack bot token
 - `SLACK_CHANNEL` – Slack channel for standup messages
 - `FIBERY_BASE_URL` – Base URL of your Fibery instance
+
+All scripts read configuration from `config.py` in the project root and fail if it is absent.
