@@ -251,18 +251,10 @@ for task in tasks:
     for user in task["assignments/assignees"]:
         users.add(user['fibery/id'])
 
-    if not skip_qa and not task["Tasks/Verified by QA"]:
-        t = task.copy()
-        t["fibery/id"] = qa_id(t["fibery/id"])
-        t["Tasks/name"] += " - Verify"
-        t["__status"] = "Open"
-        t['Tasks/Estimate'] = t['Tasks/Estimate'] / 2
-        t["assignments/assignees"] = [
-            {'fibery/id': '455f2f50-5627-11e9-bcdd-8aba22381101', 'user/name': 'Anastasiya Zhdanovskaya'},
-            {'fibery/id': 'b85ccda0-6373-11ea-8da1-c73fee560e63', 'user/name': 'Pavel Rytvinsky'}]
-        t["user/Tasks"] = [{"fibery/id": task["fibery/id"]}]
-        qa_tasks.append(t)
-        deadline_half_lifes[t["fibery/id"]] = hl
+    # ``tasks.svg`` previously included automatically created QA tasks for
+    # work items awaiting verification.  These additional ``-qa`` tasks were
+    # assigned to specific people and cluttered the diagram.  The generation
+    # logic was removed to keep the output focused on real tasks.
 
 tasks += qa_tasks
 
