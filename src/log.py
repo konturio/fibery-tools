@@ -1,11 +1,12 @@
 import logging
+import sys
 import structlog
 
 logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 structlog.configure(
     wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
-    logger_factory=structlog.PrintLoggerFactory(),
+    logger_factory=structlog.PrintLoggerFactory(file=sys.stderr),
 )
 
 
