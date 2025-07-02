@@ -117,7 +117,6 @@ def main():
     tasks = command_result(r)
     if tasks is None:
         log.error("Failed to fetch tasks", body=r.text)
-        sys.stderr.write(r.text)
         return
     tasks = unwrap_entities(tasks)
     log.info("Loaded tasks", count=len(tasks), bytes=len(json.dumps(tasks)))

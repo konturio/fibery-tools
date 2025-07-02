@@ -82,8 +82,7 @@ def aaa():
     steps = command_result(r)
     if steps is None:
         log.error("Failed to fetch steps", body=r.text)
-        log.warning("No steps returned")
-        sys.stderr.write(r.text)
+        log.warning("No steps returned", body=r.text)
         steps = []
     steps = unwrap_entities(steps)
     log.info("Got steps", count=len(steps), bytes=len(json.dumps(steps)))
@@ -149,12 +148,10 @@ def aaa():
     cases = command_result(r)
     if cases is None:
         log.error("Failed to fetch cases", body=r.text)
-        log.warning("No cases returned")
-        sys.stderr.write(r.text)
+        log.warning("No cases returned", body=r.text)
         cases = []
     cases = unwrap_entities(cases)
 
-    sys.stderr.write(r.text)
     log.info("Got cases", count=len(cases), bytes=len(json.dumps(cases)))
 
     dot = Digraph()

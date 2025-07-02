@@ -3,8 +3,8 @@
 This project contains small utilities for interacting with Fibery and Slack. The scripts live under `src/`.
 
 ## Modules
-- `align` – fixes missing task start times, branch names and resets disabled formula fields, including Estimate scaling intercept. When Fibery returns an unexpected response the script writes the body to stderr and exits.
-- `workflow` – generates Graphviz diagrams for active tasks and breaks circular dependencies. When no tasks are returned from the API the script prints the raw response to ``stderr`` and logs a warning. The script logs how many tasks and user stories were loaded and their JSON size. Fibery wraps entity lists in a top level ``data`` key and `workflow` unwraps it automatically.
+- `align` – fixes missing task start times, branch names and resets disabled formula fields, including Estimate scaling intercept. When Fibery returns an unexpected response the script logs the raw body at error level and exits.
+- `workflow` – generates Graphviz diagrams for active tasks and breaks circular dependencies. When no tasks are returned from the API the script logs the raw response and a warning. The script logs how many tasks and user stories were loaded and their JSON size. Fibery wraps entity lists in a top level ``data`` key and `workflow` unwraps it automatically.
 - `slack_standup` – posts current task status to Slack.
 - `slack_people` – sends a separate Slack message for each user with their tasks.
 - `check_names` – scans a CSV file with tasks and reports naming issues.

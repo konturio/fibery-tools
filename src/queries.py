@@ -108,13 +108,13 @@ GET_TASKS_QUERY = r"""
               "user/Contract",
               "fibery/public-id"
             ],
-            "Tasks/name": [
+            "Sales CRM/name": [
               "user/Contract",
-              "Tasks/name"
+              "Sales CRM/name"
             ],
-            "Tasks/Deadline": [
+            "Sales CRM/Deadline": [
               "user/Contract",
-              "Tasks/Deadline"
+              "Sales CRM/Deadline"
             ],
             "workflow/state": {
               "enum/name": [
@@ -124,9 +124,9 @@ GET_TASKS_QUERY = r"""
               ]
             }
           },
-          "user/Tasks": {
+          "user/Subtasks": {
             "q/from": [
-              "user/Tasks"
+              "user/Subtasks"
             ],
             "q/select": {
               "fibery/id": [
@@ -300,9 +300,9 @@ GET_STORIES_QUERY = r"""
           "fibery/public-id": [
             "fibery/public-id"
           ],
-          "user/Tasks": {
+          "user/Subtasks": {
             "q/from": [
-              "user/Tasks"
+              "user/Subtasks"
             ],
             "q/select": {
               "fibery/id": [
