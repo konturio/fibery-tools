@@ -125,6 +125,14 @@ def main():
     reset_formula_fields([
         ("Tasks/User Story", "Tasks/ICE Score"),
         ("fibery/user", "user/Estimate scaling intercept"),
+        (
+            "People space/Time Utilization",
+            "People space/Personal scaled time estimate",
+        ),
+        (
+            "People space/Time Utilization",
+            "People space/Sprint scaled time estimate",
+        ),
     ])
 
     for task in tasks:
