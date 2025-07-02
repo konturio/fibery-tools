@@ -11,6 +11,9 @@ This project contains small utilities for interacting with Fibery and Slack. The
 - `disable_search` – disables search for selected Fibery types.
 - `patch_ranks` – adjusts task ranks according to a CSV mapping.
 - `fibery_userflow` – builds user flow diagrams from scenario steps.
+- Tasks store subtasks in the `user/Subtasks` relation while User Stories keep
+  them under `user/Tasks`. The workflow script normalizes these fields so
+  later logic can rely on `user/Tasks` only.
 
 See `config.py.example` for required configuration values.
 All scripts load configuration from `config.py` in the repository root and exit if this file is missing.

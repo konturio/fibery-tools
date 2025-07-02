@@ -300,9 +300,9 @@ GET_STORIES_QUERY = r"""
           "fibery/public-id": [
             "fibery/public-id"
           ],
-          "user/Subtasks": {
+          "user/Tasks": {
             "q/from": [
-              "user/Subtasks"
+              "user/Tasks"
             ],
             "q/select": {
               "fibery/id": [
