@@ -14,6 +14,8 @@ This project contains small utilities for interacting with Fibery and Slack. The
 - Tasks store subtasks in the `user/Subtasks` relation while User Stories keep
   them under `user/Tasks`. The workflow script normalizes these fields so
   later logic can rely on `user/Tasks` only.
+- Contract deadlines come from the `Sales CRM/Deadline` field rather than
+  `Tasks/Deadline`.
 
 See `config.py.example` for required configuration values.
 All scripts load configuration from `config.py` in the repository root and exit if this file is missing.
