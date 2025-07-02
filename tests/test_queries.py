@@ -5,5 +5,9 @@ from pathlib import Path
 from queries import GET_TASKS_QUERY, GET_STORIES_QUERY
 
 def test_queries_are_valid_json():
-    json.loads(GET_TASKS_QUERY)
-    json.loads(GET_STORIES_QUERY)
+    tasks = json.loads(GET_TASKS_QUERY)
+    stories = json.loads(GET_STORIES_QUERY)
+    assert isinstance(tasks, list) and tasks
+    assert isinstance(stories, list) and stories
+    assert tasks[0]["command"] == "fibery.entity/query"
+    assert stories[0]["command"] == "fibery.entity/query"

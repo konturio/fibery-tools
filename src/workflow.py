@@ -28,7 +28,10 @@ get_stories_command = GET_STORIES_QUERY
 
 json.loads(get_tasks_command)
 r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_tasks_command, headers=headers)
-tasks = command_result(r) or []
+tasks = command_result(r)
+if tasks is None:
+    log.error("Failed to fetch tasks", body=r.text)
+    tasks = []
 if not tasks:
     log.warning("No tasks returned")
     # Log full API response when no tasks returned
@@ -38,7 +41,10 @@ log.info("Got tasks")
 
 json.loads(get_stories_command)
 r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_stories_command, headers=headers)
-stories = command_result(r) or []
+stories = command_result(r)
+if stories is None:
+    log.error("Failed to fetch stories", body=r.text)
+    stories = []
 if not stories:
     log.warning("No user stories returned")
     # Log full API response when no user stories returned

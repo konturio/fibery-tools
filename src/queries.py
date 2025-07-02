@@ -1,6 +1,7 @@
 """Query templates used by workflow module."""
 
 GET_TASKS_QUERY = r"""
+  [
   {
     "command": "fibery.entity/query",
     "args": {
@@ -235,9 +236,11 @@ GET_TASKS_QUERY = r"""
       "params": {}
     }
   }
+  ]
 """
 
 GET_STORIES_QUERY = r"""
+  [
   {
     "command": "fibery.entity/query",
     "args": {
@@ -384,4 +387,5 @@ GET_STORIES_QUERY = r"""
       "params": {}
     }
   }
+  ]
 """
