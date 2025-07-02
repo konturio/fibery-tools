@@ -31,12 +31,18 @@ r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_tasks_command, hea
 tasks = command_result(r)
 if tasks is None:
     log.error("Failed to fetch tasks", body=r.text)
-    tasks = []
+    sys.exit(1)
 tasks = unwrap_entities(tasks)
+# Later logic expects the dependency list in ``user/Tasks``. In newer
+# Fibery schemas subtasks are stored in ``user/Subtasks`` so remap this
+# field to keep the rest of the script unchanged.
+for t in tasks:
+    if "user/Subtasks" in t:
+        t["user/Tasks"] = t.pop("user/Subtasks")
 if not tasks:
     log.warning("No tasks returned")
     # Log full API response when no tasks returned
-    sys.stderr.write(r.text)
+    log.error("Empty tasks list", body=r.text)
 log.info("Got tasks", count=len(tasks), bytes=len(json.dumps(tasks)))
 
 
@@ -45,12 +51,16 @@ r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_stories_command, h
 stories = command_result(r)
 if stories is None:
     log.error("Failed to fetch stories", body=r.text)
-    stories = []
+    sys.exit(1)
 stories = unwrap_entities(stories)
+# Normalize blocker field like above to account for schema changes.
+for t in stories:
+    if "user/Subtasks" in t:
+        t["user/Tasks"] = t.pop("user/Subtasks")
 if not stories:
     log.warning("No user stories returned")
     # Log full API response when no user stories returned
-    sys.stderr.write(r.text)
+    log.error("Empty user stories list", body=r.text)
 log.info("Got user stories", count=len(stories), bytes=len(json.dumps(stories)))
 
 tasks += stories
@@ -132,11 +142,12 @@ for task in tasks:
     hl = "2999-12-30"
     skip_qa = task.get("Tasks/Skip QA", True)  # User stories don't have Skip QA
     task["__type"] = "Task"
-    # Substories block their parent tasks
+    # `user/Tasks` stores blockers. Substories must be completed before the
+    # parent, so add them as blockers here.
     if "user/Substories" in task:
         task["user/Tasks"].extend(task["user/Substories"])
 
-    # Story subtasks block all tasks of the story
+    # Story subtasks also block other tasks of the same story.
     if "user/User Story" in task:
         task["user/Tasks"].extend(task["user/User Story"].get("user/Substories", []))
         for story in task["user/User Story"].get("user/Substories", []):
