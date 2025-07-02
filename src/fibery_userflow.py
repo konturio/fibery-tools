@@ -81,6 +81,7 @@ def aaa():
     r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_steps_command, headers=headers)
     steps = command_result(r)
     if steps is None:
+        log.error("Failed to fetch steps", body=r.text)
         log.warning("No steps returned")
         sys.stderr.write(r.text)
         steps = []
@@ -147,6 +148,7 @@ def aaa():
     r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=get_cases_command, headers=headers)
     cases = command_result(r)
     if cases is None:
+        log.error("Failed to fetch cases", body=r.text)
         log.warning("No cases returned")
         sys.stderr.write(r.text)
         cases = []
