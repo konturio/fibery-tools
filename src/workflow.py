@@ -159,7 +159,9 @@ for task in tasks:
         task["Tasks/Deadline"] = None
         task["__type"] = "User_Story"
     if "user/Contract" not in task:
-        task["user/Contract"] = {"Tasks/Deadline": None}
+        task["user/Contract"] = {"Sales CRM/Deadline": None}
+    elif "Sales CRM/Deadline" not in task["user/Contract"]:
+        task["user/Contract"]["Sales CRM/Deadline"] = None
     if "Tasks/Verified by QA" not in task:
         task["Tasks/Verified by QA"] = True
     if "Tasks/Story Point float" not in task:
@@ -185,12 +187,12 @@ for task in tasks:
             task["__sprint_end"] = task["user/Sprint"]["Tasks/When"]["end"]
             deadlines.add(hl)
 
-    if task["user/Contract"]["Tasks/Deadline"]:
-        hl = task["user/Contract"]["Tasks/Deadline"]
+    if task["user/Contract"]["Sales CRM/Deadline"]:
+        hl = task["user/Contract"]["Sales CRM/Deadline"]
         if not task['Tasks/Deadline']:
-            task['Tasks/Deadline'] = task["user/Contract"]["Tasks/Deadline"]
-        elif task['Tasks/Deadline'] > task["user/Contract"]["Tasks/Deadline"]:
-            task['Tasks/Deadline'] = task["user/Contract"]["Tasks/Deadline"]
+            task['Tasks/Deadline'] = task["user/Contract"]["Sales CRM/Deadline"]
+        elif task['Tasks/Deadline'] > task["user/Contract"]["Sales CRM/Deadline"]:
+            task['Tasks/Deadline'] = task["user/Contract"]["Sales CRM/Deadline"]
         deadlines.add(hl)
 
     if task['Tasks/Deadline']:
@@ -446,7 +448,7 @@ for task in tasks:
         fillcolor = 'white'
         deadline = ""
         if task['Tasks/Deadline']:
-            if task['Tasks/Deadline'] < task_end_times[task["fibery/id"]]:
+            if task["fibery/id"] in task_end_times and task['Tasks/Deadline'] < task_end_times[task["fibery/id"]]:
                 fillcolor = 'red'
             deadline = " // deadline: " + task['Tasks/Deadline']
 
