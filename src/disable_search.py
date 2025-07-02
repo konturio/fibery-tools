@@ -1,3 +1,5 @@
+"""Disable search for selected Fibery types."""
+
 import requests
 import json
 from config_loader import import_config
@@ -12,27 +14,50 @@ headers = {
     "User-Agent": "search disabler script",
 }
 
-def disable_search_in(schema):
-    chunk = [{"command":"fibery.schema/batch", "args":{"commands":[{"command":"schema.type/set-meta", "args":{"name":schema, "key":"search/disabled", "value":True}}]}}]
+def disable_search_in(schema: str) -> None:
+    """Disable search indexing for schema type ``schema``."""
+    chunk = [
+        {
+            "command": "fibery.schema/batch",
+            "args": {
+                "commands": [
+                    {
+                        "command": "schema.type/set-meta",
+                        "args": {"name": schema, "key": "search/disabled", "value": True},
+                    }
+                ]
+            },
+        }
+    ]
     log.info(chunk)
-    r = requests.post(f"{FIBERY_BASE_URL}/api/commands", data=json.dumps(chunk), headers=headers)
+    r = requests.post(
+        f"{FIBERY_BASE_URL}/api/commands", data=json.dumps(chunk), headers=headers
+    )
     log.info(r.text)
     
-disable_search_in("KPI/Personal KPI")
-disable_search_in("KPI/Teams KPI")
-disable_search_in("KPI/Sprint commitments")
-disable_search_in("Candidate salary expectations/Salary expectation")
-disable_search_in("Finance/Salary change")
-disable_search_in("GitHub/Pull Request")
-disable_search_in("GitHub/Branch")
-disable_search_in("GitHub/Member")
-disable_search_in("Platform GitLab/Merge Request")
-disable_search_in("Platform GitLab/Branch")
-disable_search_in("vacations/dayon")
-disable_search_in("vacations/vacation")
-disable_search_in("vacations/sick")
-disable_search_in("KPI/Time Utilization")
+def main() -> None:
+    """Disable search for predefined schemas."""
+    schemas = [
+        "KPI/Personal KPI",
+        "KPI/Teams KPI",
+        "KPI/Sprint commitments",
+        "Candidate salary expectations/Salary expectation",
+        "Finance/Salary change",
+        "GitHub/Pull Request",
+        "GitHub/Branch",
+        "GitHub/Member",
+        "Platform GitLab/Merge Request",
+        "Platform GitLab/Branch",
+        "vacations/dayon",
+        "vacations/vacation",
+        "vacations/sick",
+        "KPI/Time Utilization",
+    ]
+    for schema in schemas:
+        disable_search_in(schema)
+
+    log.info(requests.get(f"{FIBERY_BASE_URL}/api/search/reindex", headers=headers))
 
 
-
-log.info(requests.get(f"{FIBERY_BASE_URL}/api/search/reindex", headers=headers))
+if __name__ == "__main__":
+    main()

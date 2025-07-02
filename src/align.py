@@ -1,14 +1,16 @@
+"""Fix inconsistent task metadata in Fibery."""
 try:
     import requests
 except ImportError:  # pragma: no cover - requests may be absent during tests
     class requests:
         pass
+
 import json
 import sys
-import re
 from config_loader import import_config
 from log import get_logger
 from fibery_api import command_result, unwrap_entities
+from utils import slugify
 
 
 FIBERY_BASE_URL, TOKEN = import_config("FIBERY_BASE_URL", "TOKEN")
@@ -85,6 +87,7 @@ def reset_formula_fields(fields):
         )
 
 def update_task(task):
+    """Send ``task`` update request to Fibery."""
     if "__status" in task:
         del task["__status"]
     if "fibery/modification-date" in task:
@@ -108,6 +111,7 @@ def update_task(task):
 
 
 def main():
+    """Entry point for the alignment script."""
     json.loads(get_tasks_command)
     r = requests.post(
         f"{FIBERY_BASE_URL}/api/commands",
@@ -178,23 +182,10 @@ def main():
             log.info(task)
             update_task(task)
 
-def removeSequenceOf(symbol, string):
-    filtered = filter(lambda s: s != "", string.split(symbol))
-    return symbol.join(filtered)
-
-
 def branch_name(task):
-    cleanedName = ""
-    if task.get("Tasks/name", ""):
-        cleanedName = re.sub(
-            r"[^(\w|\d|\-)]|[()\[\]\{\}]",
-            "-",
-            task.get("Tasks/name", "").strip().lower(),
-        )
-    withoutRepeated = removeSequenceOf("-", cleanedName)
-    return task["fibery/public-id"] + "-" + withoutRepeated
-
-    # update_task({"fibery/id": "b37845c0-4c96-11e9-8199-61f8d753595e", "Tasks/name": "Super name_updated"})
+    """Return branch name for *task*."""
+    slug = slugify(task.get("Tasks/name", ""))
+    return f"{task['fibery/public-id']}-{slug}"
 
 
 if __name__ == "__main__":

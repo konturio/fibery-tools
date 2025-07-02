@@ -1,3 +1,5 @@
+"""Patch Fibery task ranks based on ``tasknames.csv`` mapping."""
+
 import requests
 import json
 import csv
@@ -13,6 +15,7 @@ headers = {
     "User-Agent": "rank patcher script",
 }
 def update_task(tasks):
+    """Upload updated ranks to Fibery."""
     update_tasks_command = []
     for task in tasks:
         if "__status" in task:
