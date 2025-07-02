@@ -456,4 +456,5 @@ for task in tasks:
 for sprint in sprints.values():
     dot.subgraph(sprint)
 
-log.info(dot.source)
+# Print the diagram source directly so make dot can pipe it to Graphviz
+print(dot.source)
