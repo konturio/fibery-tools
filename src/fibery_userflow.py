@@ -1,3 +1,5 @@
+"""Generate user flow diagram from Fibery scenario steps."""
+
 import requests
 import json
 import sys
@@ -14,7 +16,8 @@ from fibery_api import command_result, unwrap_entities
 TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
 log = get_logger(__name__)
 
-def aaa():
+def main() -> None:
+    """Fetch scenario steps and output a Graphviz diagram."""
 
     headers = {
         "Authorization": f"Token {TOKEN}",
@@ -241,4 +244,6 @@ def aaa():
 
     log.info(dot.source)
 
-aaa()
+
+if __name__ == "__main__":
+    main()

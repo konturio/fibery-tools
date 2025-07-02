@@ -1,3 +1,5 @@
+"""Generate Graphviz diagram of task dependencies."""
+
 import requests
 import json
 import sys
