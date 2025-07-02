@@ -26,9 +26,6 @@ GET_TASKS_QUERY = r"""
           "Tasks/Verified by QA": [
             "Tasks/Verified by QA"
           ],
-          "Tasks/Story Point float": [
-            "Tasks/Story Point float"
-          ],
           "Tasks/Skip QA": [
             "Tasks/Skip QA"
           ],
