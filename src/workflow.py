@@ -10,7 +10,7 @@ import math
 from config_loader import import_config
 from log import get_logger
 from queries import GET_TASKS_QUERY, GET_STORIES_QUERY
-from fibery_api import command_result
+from fibery_api import command_result, unwrap_entities
 
 TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
 log = get_logger(__name__)
@@ -32,11 +32,12 @@ tasks = command_result(r)
 if tasks is None:
     log.error("Failed to fetch tasks", body=r.text)
     tasks = []
+tasks = unwrap_entities(tasks)
 if not tasks:
     log.warning("No tasks returned")
     # Log full API response when no tasks returned
     sys.stderr.write(r.text)
-log.info("Got tasks")
+log.info("Got tasks", count=len(tasks), bytes=len(json.dumps(tasks)))
 
 
 json.loads(get_stories_command)
@@ -45,13 +46,19 @@ stories = command_result(r)
 if stories is None:
     log.error("Failed to fetch stories", body=r.text)
     stories = []
+stories = unwrap_entities(stories)
 if not stories:
     log.warning("No user stories returned")
     # Log full API response when no user stories returned
     sys.stderr.write(r.text)
-log.info("Got user stories")
+log.info("Got user stories", count=len(stories), bytes=len(json.dumps(stories)))
 
 tasks += stories
+log.info(
+    "Combined tasks",
+    count=len(tasks),
+    bytes=len(json.dumps(tasks)),
+)
 
 dot = Digraph()
 dot.graph_attr["rankdir"] = "TB"

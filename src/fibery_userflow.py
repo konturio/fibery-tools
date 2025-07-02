@@ -9,7 +9,7 @@ import math
 import csv
 from config_loader import import_config
 from log import get_logger
-from fibery_api import command_result
+from fibery_api import command_result, unwrap_entities
 
 TOKEN, FIBERY_BASE_URL = import_config("TOKEN", "FIBERY_BASE_URL")
 log = get_logger(__name__)
@@ -85,8 +85,8 @@ def aaa():
         log.warning("No steps returned")
         sys.stderr.write(r.text)
         steps = []
-
-    log.info("Got steps")
+    steps = unwrap_entities(steps)
+    log.info("Got steps", count=len(steps), bytes=len(json.dumps(steps)))
     
 
     get_cases_command = """
@@ -152,9 +152,10 @@ def aaa():
         log.warning("No cases returned")
         sys.stderr.write(r.text)
         cases = []
+    cases = unwrap_entities(cases)
 
     sys.stderr.write(r.text)
-    log.info("Got cases")
+    log.info("Got cases", count=len(cases), bytes=len(json.dumps(cases)))
 
     dot = Digraph()
     #dot.graph_attr["rankdir"] = "TB"

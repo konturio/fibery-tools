@@ -8,7 +8,7 @@ import sys
 import re
 from config_loader import import_config
 from log import get_logger
-from fibery_api import command_result
+from fibery_api import command_result, unwrap_entities
 
 
 FIBERY_BASE_URL, TOKEN = import_config("FIBERY_BASE_URL", "TOKEN")
@@ -119,6 +119,8 @@ def main():
         log.error("Failed to fetch tasks", body=r.text)
         sys.stderr.write(r.text)
         return
+    tasks = unwrap_entities(tasks)
+    log.info("Loaded tasks", count=len(tasks), bytes=len(json.dumps(tasks)))
 
     # Reset formulas that may be disabled due to endless loop errors.
     reset_formula_fields([
